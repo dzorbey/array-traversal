@@ -5,12 +5,17 @@ import java.util.List;
 public class Row {
 
 	private Integer index;
-	private Integer size;
+	private Integer contentSize;
+	private Integer contentSum;
 	private List<Integer> contents;
 
 	private boolean first;
 	private boolean last;
 
+	private Row previousRow;
+	private Row nextRow;
+
+	
 	public boolean isFirst() {
 		return first;
 	}
@@ -27,6 +32,38 @@ public class Row {
 		this.last = last;
 	}
 
+	public Row getPreviousRow() {
+		return previousRow;
+	}
+
+	public void setPreviousRow(Row previousRow) {
+		this.previousRow = previousRow;
+	}
+
+	public Row getNextRow() {
+		return nextRow;
+	}
+
+	public void setNextRow(Row nextRow) {
+		this.nextRow = nextRow;
+	}
+
+	public Integer getContentSize() {
+		return contentSize;
+	}
+
+	public void setContentSize(Integer contentSize) {
+		this.contentSize = contentSize;
+	}
+
+	public Integer getContentSum() {
+		return contentSum;
+	}
+
+	public void setContentSum(Integer contentSum) {
+		this.contentSum = contentSum;
+	}
+
 	public Integer getIndex() {
 		return index;
 	}
@@ -35,16 +72,8 @@ public class Row {
 		this.index = index;
 	}
 
-	public Integer getSize() {
-		return size;
-	}
-
-	public void setSize(Integer size) {
-		this.size = size;
-	}
-
 	public void decrementSize(Integer decrement) {
-		this.setSize(this.getSize() - decrement);
+		this.setContentSize(this.getContentSize() - decrement);
 	}
 
 	public Integer getByIndex(Integer index) {

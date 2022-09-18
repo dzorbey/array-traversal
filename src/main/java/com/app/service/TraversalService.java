@@ -8,7 +8,7 @@ import com.app.domain.Solution;
 
 public interface TraversalService {
 
-	public List<Integer> traversed2DArray(List<Row> rowList);
+	public List<Integer> traversed2DArray(List<Row> rowList, Integer initialSize);
 	
 	public List<Row> generate2DArrayMapping(int[][] dimensionalArray);
 	

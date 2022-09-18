@@ -1,10 +1,14 @@
 package com.app.service;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 import com.app.domain.Row;
 import com.app.domain.Solution;
+import com.app.domain.State;
 
 public class TraversalServiceImpl implements TraversalService {
 	
@@ -12,7 +16,15 @@ public class TraversalServiceImpl implements TraversalService {
 	public Solution process(int[][] array) {
 		List<Row> rowList = generate2DArrayMapping(array);
 		
-		return new Solution(traversed2DArray(rowList));
+		Integer initialSize = rowList.
+				stream().map(Row::getContentSize).reduce(0, Integer::sum);
+		
+		IntStream stream = 
+				Arrays.stream(array).flatMapToInt(x -> Arrays.stream(x));
+		
+		List<Integer> traversedList = traversed2DArray(rowList, initialSize);
+		
+		return new Solution(traversedList, initialSize, Integer.valueOf(stream.sum()));
 	}
 
 	/*
@@ -24,26 +36,22 @@ public class TraversalServiceImpl implements TraversalService {
 	 * 
 	 * By following such pattern we make the algorithm to be applicable for any number of [n][m] 2D array size combinations.
 	 */
-	public List<Integer> traversed2DArray(List<Row> rowList) {
+	public List<Integer> traversed2DArray(List<Row> rowList, Integer initialSize) {
 		List<Integer> traversedList = new ArrayList<Integer>();
-		
-		Integer initialSize = rowList.
-				stream().map(Row::getSize).reduce(0, Integer::sum);
 
 		while (traversedList.size() < initialSize) {
 
 			for (int currentIndex = 0; currentIndex < rowList.size(); currentIndex++) {
 				Row currentRow = rowList.get(currentIndex);
-
+				
 				/*
 				 * If a row is a first row in the given iteration, all the contents are
 				 * transfered in order into the final MatrixList.
 				 */
 				if (currentRow.isFirst() == true) {
 					traversedList.addAll(currentRow.getContents());
-					currentRow.setSize(0);
+					currentRow.setContentSize(0);
 					currentRow.setFirst(false);
-
 				}
 				/*
 				 * If a row is a last row in the current iteration, then all the contents are
@@ -55,43 +63,45 @@ public class TraversalServiceImpl implements TraversalService {
 				 */
 				else if (currentRow.isLast() == true) {
 
-					Integer currentFinalRowSize = currentRow.getSize();
+					Integer currentFinalRowSize = currentRow.getContentSize();
 					for (int index = currentFinalRowSize - 1; index >= 0; index--) {
 						traversedList.add(currentRow.getByIndex(index));
 					}
-					Integer currentFinalIndex = currentRow.getIndex();
-					currentRow.setSize(0);
+					currentRow.setContentSize(0);
 					currentRow.setLast(false);
-
-					Integer backwardIterateIndex = currentFinalIndex - 1;
-
-					while (rowList.get(backwardIterateIndex).getSize() != 0) {
-						Row previousRow = rowList.get(backwardIterateIndex);
-
-						if (rowList.get(backwardIterateIndex - 1).getSize() == 0) {
-							previousRow.setFirst(true);
+					
+					for(Row row : rowList) {
+						if(row.getContentSize() != 0) {
+							row.setFirst(true);
+							break;
 						}
-						if (rowList.get(backwardIterateIndex + 1).getSize() == 0) {
-							previousRow.setLast(true);
+					}
+					
+					
+					boolean lastFound = false;
+					while(currentRow.getPreviousRow() != null) {
+						Row row = currentRow.getPreviousRow();
+
+						if(row.getContentSize() != 0 && lastFound == false) {
+							row.setLast(true);
+							lastFound = true;
 						}
-						Integer currentDataToRemove = previousRow.getByIndex(0);
-						traversedList.add(currentDataToRemove);
+						
+						if(row.getContentSize() != 0) {
+							Integer currentDataToRemove = row.getByIndex(0);
+							traversedList.add(currentDataToRemove);
 
-						/*
-						 * If an intermediate row is being processed by following the process of a previous isLast row, 
-						 * then the first object of the intermediate row is selected which is the current inner edge of the matrix.
-						 */
-						previousRow.getContents().remove(0);
-						previousRow.decrementSize(1);
-
-						backwardIterateIndex--;
+							row.getContents().remove(0);
+							row.decrementSize(1);	
+						}						
+						currentRow = currentRow.getPreviousRow();
 					}
 				}
 			    /*
 				 * if a row is not a first or a last row, then it is an intermediate row.
 				 */
 				else {
-					Integer currentRowSize = currentRow.getSize();
+					Integer currentRowSize = currentRow.getContentSize();
 
 					if (currentRowSize != 0) {
 						Integer currentDataToRemove = currentRow.getByIndex(currentRowSize - 1);
@@ -102,7 +112,7 @@ public class TraversalServiceImpl implements TraversalService {
 						 * then the last object of the intermediate row is selected which is the current outer edge of the matrix.
 						 */
 						currentRow.getContents().remove(currentRowSize - 1);
-						currentRow.decrementSize(1);
+						currentRow.decrementSize(1);		
 					}
 				}
 			}
@@ -115,6 +125,8 @@ public class TraversalServiceImpl implements TraversalService {
 	 * data structure Therefore initially the input content is transformed into a list of [Row] objects.
 	 */
 	public List<Row> generate2DArrayMapping(int[][] dimensionalArray) {
+		
+		Stream.of(dimensionalArray).map(Arrays::toString).forEach(System.out::println);
 
 		List<Row> rows = new ArrayList<Row>();
 		for (int i = 0; i < dimensionalArray.length; i++) {
@@ -126,7 +138,7 @@ public class TraversalServiceImpl implements TraversalService {
 				currentRow.add(dimensionalArray[i][j]);
 			}
 			row.setContents(currentRow);
-			row.setSize(currentRow.size());
+			row.setContentSize(currentRow.size());
 
 			if (row.getIndex() == 0) {
 				row.setFirst(true);
@@ -135,6 +147,20 @@ public class TraversalServiceImpl implements TraversalService {
 				row.setLast(true);
 			}
 			rows.add(row);
+		}
+		
+		for(Row row : rows) {
+			Integer currentIndex = row.getIndex();
+			
+			if(row.isLast() != true
+					&& row.getNextRow() == null && rows.get(currentIndex + 1) != null) {
+				row.setNextRow(rows.get(currentIndex+1));
+			}
+			
+			if(row.isFirst() != true
+					&& row.getPreviousRow() == null && rows.get(currentIndex - 1) != null) {
+				row.setPreviousRow(rows.get(currentIndex - 1));
+			}
 		}
 		return rows;
 	}
