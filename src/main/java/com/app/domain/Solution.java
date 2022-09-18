@@ -3,6 +3,11 @@ package com.app.domain;
 import java.util.List;
 import java.util.stream.Collectors;
 
+
+/*
+ * The Solution object holds the new traversed List and the initial data about the input 2d array, 
+ * which allows us to check the outcome against the initial expectation in the test scenarios in a structured way.
+ */
 public class Solution {
 
 	private Integer initialArraySize;

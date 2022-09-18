@@ -2,6 +2,14 @@ package com.app.domain;
 
 import java.util.List;
 
+/*
+ * The initial array object is transformed into a List of Rows, 
+ * each row has a current index, the contents of that particular row,
+ * the sum all integers of the contents and the value size of the content list.
+ * 
+ * The object also hold a reference to the current position of the row within the list as first/last element reference,
+ * and a reference to the previous adjacent row in the list.
+ */
 public class Row {
 
 	private Integer index;
@@ -13,8 +21,6 @@ public class Row {
 	private boolean last;
 
 	private Row previousRow;
-	private Row nextRow;
-
 	
 	public boolean isFirst() {
 		return first;
@@ -38,14 +44,6 @@ public class Row {
 
 	public void setPreviousRow(Row previousRow) {
 		this.previousRow = previousRow;
-	}
-
-	public Row getNextRow() {
-		return nextRow;
-	}
-
-	public void setNextRow(Row nextRow) {
-		this.nextRow = nextRow;
 	}
 
 	public Integer getContentSize() {

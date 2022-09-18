@@ -2,6 +2,7 @@ package com.app.service;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,7 +24,10 @@ public class TraversalServiceTest {
 		service = new MockTraversalServiceImpl();
 	}
 
-    @Test
+	/*
+	 * Initial test scenario requested.
+	 */
+	@Test
 	public void requestedScenarioSatisfied() throws Exception {
 
 		System.out.println("");
@@ -40,6 +44,27 @@ public class TraversalServiceTest {
 		assertTrue(conditionToVarify.equals(solution.toString()));
 	}
 
+	/*
+	 * Adding on to the Initial test scenario.
+	 */
+	@Test
+	public void initialScenarioUpdatedSatisfied() throws Exception {
+
+		System.out.println("");
+		int[][] initial2dArray = { { 1, 2, 3, 4 }, { 5, 6, 7, 8 }, { 9, 10, 11, 12 }, { 13, 14, 15, 16 },
+				{ 17, 18, 19, 20 } };
+
+		Solution solution = service.process(initial2dArray);
+		logger.info("\u001B[32m" + "result: " + solution.toString() + "\u001B[0m");
+
+		assertTrue(solution.getSolutionSize().equals(solution.getInitialArraySize()));
+		assertTrue(solution.getSolutionSum().equals(solution.getInitialArraySum()));
+	}
+
+	/*
+	 * Testing edge cases with combinations of single/odd rows with multiple length
+	 * rows.
+	 */
 	@Test
 	public void unEvenRowLenghtsScenarioSatisfied() throws Exception {
 
@@ -54,8 +79,11 @@ public class TraversalServiceTest {
 		assertTrue(solution.getSolutionSum().equals(solution.getInitialArraySum()));
 	}
 
+	/*
+	 * Elaborating further on the unEven single/multiple length rows scenario.
+	 */
 	@Test
-	public void unEvenRowLenghtsScenarioSatisfied2() throws Exception {
+	public void unEvenRowLenghtsScenarioSatisfiedScenario2() throws Exception {
 
 		System.out.println("");
 		int[][] initial2dArray = { { 1, 2, 3, 4, 5, 6, 7 }, { 8 }, { 9, 10, 11, 12, 13, 14, 15, 16 },
@@ -68,17 +96,23 @@ public class TraversalServiceTest {
 		assertTrue(solution.getSolutionSum().equals(solution.getInitialArraySum()));
 	}
 
-    @Test
+	/*
+	 * Randomly generating dynamic length 2dArrays for asserting multiple random
+	 * scenarios in order. The range of array length is within 5-10, can be updated
+	 * as wished. and the scenario runs can be further incremented.
+	 */
+	@Test
 	public void randomlyAllocatedScenarioSatisfied() throws Exception {
 
-		// for (int i = 0; i < 5; i++) {
-		System.out.println("");
+		for (int i = 0; i < 5; i++) {
+			System.out.println("");
 
-		Solution solution = service.process(1, 10);
-		logger.info("\u001B[32m" + "result: " + solution.toString() + "\u001B[0m");
+			Solution solution = service.process(5, 10);
+			logger.info("\u001B[32m" + "result: " + solution.toString() + "\u001B[0m");
 
-		assertTrue(solution.getSolutionSize().equals(solution.getInitialArraySize()));
-		assertTrue(solution.getSolutionSum().equals(solution.getInitialArraySum()));
+			assertTrue(solution.getSolutionSize().equals(solution.getInitialArraySize()));
+			assertTrue(solution.getSolutionSum().equals(solution.getInitialArraySum()));
+		}
 	}
 
 }

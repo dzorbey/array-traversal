@@ -14,7 +14,14 @@ public class MockTraversalServiceImpl extends TraversalServiceImpl {
 	private static Random random = new Random();
 
 	
-	
+	/*
+	 * The process method of the traversal service is overloaded in the Mock service with the min and max values as input,
+	 * which are required for the randomly generated 2dArray test scenarios. Also, in case we don't receive an int[][] object as input
+	 * the control values required to be calculated is based on the created List of Row objects. 
+	 * The approach differs between int[][] vs List<Rows>
+	 * 
+	 * For remaining cases in which the int[][] is used as input for the tests, the method in TraversalServiceImpl will be used as is.
+	 */
 	public Solution process(int min, int max) {
 		List<Row> rows = generate2DArrayMapping(min, max);
 		
@@ -30,6 +37,12 @@ public class MockTraversalServiceImpl extends TraversalServiceImpl {
 	}
 	
 
+	/*
+	 * The generate2DArrayMapping method of the traversal service is overloaded in the Mock service with the min and max values as input,
+	 * in case we would like to create a list of Row objects which represents a 2dArray with random lengths in both directions. 
+	 * 
+	 * The min-max represents the range within which random lengths will be generated.
+	 */
 	public List<Row> generate2DArrayMapping(int min, int max) {
 		List<Row> rows = new ArrayList<Row>();
 
@@ -65,11 +78,6 @@ public class MockTraversalServiceImpl extends TraversalServiceImpl {
 		}
 		for(Row row : rows) {
 			Integer currentIndex = row.getIndex();
-			
-			if(row.isLast() != true
-					&& row.getNextRow() == null && rows.get(currentIndex + 1) != null) {
-				row.setNextRow(rows.get(currentIndex+1));
-			}
 			
 			if(row.isFirst() != true
 					&& row.getPreviousRow() == null && rows.get(currentIndex - 1) != null) {
