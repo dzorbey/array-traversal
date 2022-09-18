@@ -77,8 +77,7 @@ public class TraversalServiceImpl implements TraversalService {
 					currentRow.setContentSize(0);
 					currentRow.setLast(false);
 					
-					findNextFirstRow(rowList);
-					findNextLastRow(traversedList, currentRow);
+					findNextRows(traversedList, currentRow);
 				}
 			    /*
 				 * if a row is not a first or a last row, then it is an intermediate row.
@@ -132,29 +131,39 @@ public class TraversalServiceImpl implements TraversalService {
 			}
 			rows.add(row);
 		}
-		for(Row row : rows) {
-			Integer currentIndex = row.getIndex();
-			
-			if(row.isFirst() != true
-					&& row.getPreviousRow() == null && rows.get(currentIndex - 1) != null) {
-				row.setPreviousRow(rows.get(currentIndex - 1));
-			}
-		}
+		linkRows(rows);
 		return rows;
 	}
 	
 	
-	public static void findNextFirstRow(List<Row> rows) {
+	
+	public static void linkRows(List<Row> rows) {
 		for(Row row : rows) {
-			if(row.getContentSize() != 0) {
-				row.setFirst(true);
-				break;
+			Integer currentIndex = row.getIndex();
+			
+			if(row.isLast() != true
+					&& row.getNextRow() == null && rows.get(currentIndex + 1) != null) {
+				row.setNextRow(rows.get(currentIndex + 1));
 			}
+			if(row.isFirst() != true
+					&& row.getPreviousRow() == null && rows.get(currentIndex - 1) != null) {
+				row.setPreviousRow(rows.get(currentIndex - 1));
+			}
+			row.setRoot(rows.get(0));
 		}
 	}
 	
-	public static void findNextLastRow(List<Integer> traversedList, Row currentRow) {
-		boolean lastFound = false;
+	
+	/*
+	 * This method traverses the existing row list in both directions back and forward
+	 * back iteration finds the next-in-line final row, and meanwhile processes the intermediate row content,
+	 * forward iteration finds the next-in-line first row.
+	 */
+	public static void findNextRows(List<Integer> traversedList, Row currentRow) {
+		boolean nextlastFound = false;
+		boolean nextfirstFound = false;
+		
+		Row nextFirst = currentRow.getRoot();
 		while(currentRow.getPreviousRow() != null) {
 			Row previous = currentRow.getPreviousRow();
 
@@ -169,12 +178,18 @@ public class TraversalServiceImpl implements TraversalService {
 				previous.getContents().remove(0);
 				previous.decrementSize(1);
 				
-				if(lastFound == false) {
+				if(nextlastFound == false) {
 					previous.setLast(true);
-					lastFound=true;
+					nextlastFound = true;
 				}
-			}						
+			}
+			
+			if(nextFirst.getContentSize() != 0 && nextfirstFound == false) {
+				nextFirst.setFirst(true);
+				nextfirstFound = true;
+			}
 			currentRow = previous;
+			nextFirst = nextFirst.getNextRow();
 		}
 	}
 }

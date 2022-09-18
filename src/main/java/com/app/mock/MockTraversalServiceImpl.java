@@ -76,14 +76,7 @@ public class MockTraversalServiceImpl extends TraversalServiceImpl {
 			currentRow.setContentSum(rowSum);
 			rows.add(currentRow);
 		}
-		for(Row row : rows) {
-			Integer currentIndex = row.getIndex();
-			
-			if(row.isFirst() != true
-					&& row.getPreviousRow() == null && rows.get(currentIndex - 1) != null) {
-				row.setPreviousRow(rows.get(currentIndex - 1));
-			}
-		}
+		linkRows(rows);
 		return rows;
 	}
 }

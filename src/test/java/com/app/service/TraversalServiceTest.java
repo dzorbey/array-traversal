@@ -87,12 +87,14 @@ public class TraversalServiceTest {
 		System.out.println("");
 		int[][] initial2dArray = { { 1, 2, 3, 4, 5, 6, 7 }, { 8 }, { 9, 10, 11, 12, 13, 14, 15, 16 },
 				{ 17, 18, 19, 20 }, { 21 }, { 22, 23, 24, 25 } };
+		String conditionToVarify = "1,2,3,4,5,6,7,8,16,20,21,25,24,23,22,17,9,10,11,12,13,14,15,19,18";
 
 		Solution solution = service.process(initial2dArray);
 		logger.info("\u001B[32m" + "result: " + solution.toString() + "\u001B[0m");
 
 		assertTrue(solution.getSolutionSize().equals(solution.getInitialArraySize()));
 		assertTrue(solution.getSolutionSum().equals(solution.getInitialArraySum()));
+		assertTrue(conditionToVarify.equals(solution.toString()));
 	}
 
 	/*

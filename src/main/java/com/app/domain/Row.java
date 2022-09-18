@@ -7,8 +7,8 @@ import java.util.List;
  * each row has a current index, the contents of that particular row,
  * the sum all integers of the contents and the value size of the content list.
  * 
- * The object also hold a reference to the current position of the row within the list as first/last element reference,
- * and a reference to the previous adjacent row in the list.
+ * The object also has a state of it's current position in the stack whether being first/last row in the list, and 
+ * also holds a reference to the root row of the current list, and references to the next and previous adjacent rows of itself.
  */
 public class Row {
 
@@ -20,8 +20,28 @@ public class Row {
 	private boolean first;
 	private boolean last;
 
+	private Row root;
+
+	private Row nextRow;
 	private Row previousRow;
 	
+
+	public Row getNextRow() {
+		return nextRow;
+	}
+
+	public void setNextRow(Row nextRow) {
+		this.nextRow = nextRow;
+	}
+
+	public Row getRoot() {
+		return root;
+	}
+
+	public void setRoot(Row root) {
+		this.root = root;
+	}
+
 	public boolean isFirst() {
 		return first;
 	}
