@@ -115,5 +115,21 @@ public class TraversalServiceTest {
 			assertTrue(solution.getSolutionSum().equals(solution.getInitialArraySum()));
 		}
 	}
+	
+	
+	
+	//@Test
+	public void randomlyAllocatedScenarioPerformanceTestSatisfied() throws Exception {
 
+		for (int i = 0; i < 500; i++) {
+			System.out.println("");
+
+			Solution solution = service.process(40, 50);
+			logger.info("\u001B[32m" + "result: " + solution.toString() + "\u001B[0m");
+
+			assertTrue(solution.getSolutionSize().equals(solution.getInitialArraySize()));
+			assertTrue(solution.getSolutionSum().equals(solution.getInitialArraySum()));
+		}
+	}
+	
 }

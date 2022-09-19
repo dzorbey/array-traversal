@@ -76,8 +76,13 @@ public class TraversalServiceImpl implements TraversalService {
 					}
 					currentRow.setContentSize(0);
 					currentRow.setLast(false);
+
+					/*
+					 * Iterate through existing row list on hand, also there is an option to iterate through the pointers in the commented out code.
+					 */
+					findNextRowsViaList(traversedList, rowList, currentIndex);
 					
-					findNextRows(traversedList, currentRow);
+					//findNextRowsViaPointers(traversedList, currentRow);
 				}
 			    /*
 				 * if a row is not a first or a last row, then it is an intermediate row.
@@ -157,9 +162,9 @@ public class TraversalServiceImpl implements TraversalService {
 	/*
 	 * This method traverses the existing row list in both directions back and forward
 	 * back iteration finds the next-in-line final row, and meanwhile processes the intermediate row content,
-	 * forward iteration finds the next-in-line first row.
+	 * forward iteration finds the next-in-line first row. (via pointers iteration)
 	 */
-	public static void findNextRows(List<Integer> traversedList, Row currentRow) {
+	public static void findNextRowsViaPointers(List<Integer> traversedList, Row currentRow) {
 		boolean nextlastFound = false;
 		boolean nextfirstFound = false;
 		
@@ -187,9 +192,59 @@ public class TraversalServiceImpl implements TraversalService {
 			if(nextFirst.getContentSize() != 0 && nextfirstFound == false) {
 				nextFirst.setFirst(true);
 				nextfirstFound = true;
+			}else {
+				nextFirst = nextFirst.getNextRow();	
 			}
 			currentRow = previous;
-			nextFirst = nextFirst.getNextRow();
 		}
 	}
+	
+	
+	
+	
+	/*
+	 * This method traverses the existing row list in both directions back and forward
+	 * back iteration finds the next-in-line final row, and meanwhile processes the intermediate row content,
+	 * forward iteration finds the next-in-line first row. (via existing row list iteration)
+	 */
+	public void findNextRowsViaList(List<Integer> traversedList, List<Row> rows, int currentFinalIndex) {
+		rows.remove(currentFinalIndex);
+		
+		boolean nextlastFound = false;
+		boolean nextfirstFound = false;
+		
+		int forwardIndex = 0;
+		int backwardIndex = rows.size() - 1;
+		
+		Row nextRow = rows.get(forwardIndex);
+		while(backwardIndex > -1) {
+			Row previousRow = rows.get(backwardIndex);
+			
+			if(previousRow.getContentSize() != 0) {
+				Integer currentDataToRemove = previousRow.getByIndex(0);
+				traversedList.add(currentDataToRemove);
+
+				/*
+				 * If an intermediate row is being processed by following the process of a previous isLast row, 
+				 * then the first object of the intermediate row is selected which is the current outer edge on the left size of the remaining 2d array.
+				 */
+				previousRow.getContents().remove(0);
+				previousRow.decrementSize(1);
+				
+				if(nextlastFound == false) {
+					previousRow.setLast(true);
+					nextlastFound = true;
+				}	
+			}
+			
+			if(nextRow.getContentSize() != 0 && nextfirstFound == false) {
+				nextRow.setFirst(true);
+				nextfirstFound = true;
+				rows.remove(0);
+			}else {
+				nextRow = rows.get(forwardIndex++);
+			}
+			backwardIndex--;
+		}
+	}	
 }
